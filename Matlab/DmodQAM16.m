@@ -1,7 +1,7 @@
-function bits = dmodQAM16(input)
+function bits = DmodQAM16(input)
 % dmodQAM - demodule QAM16
 %
-% Syntax: bits = dmodQAM16(input)
+% Syntax: bits = DmodQAM16(input)
 %
 % input: complex qam vector (col)
 % output: bitdata vector (row)
