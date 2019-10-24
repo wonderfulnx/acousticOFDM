@@ -11,7 +11,7 @@ function [config] = ofdm_config()
     % 每个符号比特数
     config.bits_per_symbol = 2;
     % FFT点数
-    config.IFFT_length = 512;
+    config.IFFT_length = 1024;
     % 保护间隔与OFDM数据的比例 1/6~1/4
     config.PrefixRatio = 1/4;
     % 每一个OFDM符号添加的循环前缀长度为1/4*IFFT_length

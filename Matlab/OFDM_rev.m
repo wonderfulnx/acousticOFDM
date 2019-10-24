@@ -1,4 +1,4 @@
-function [Rx_data, Rx_sound, BERs] = OFDM_rev(filename)
+function [Rx_data, Rx_sound, BERs, min_pos] = OFDM_rev(filename)
 %
 % Syntax: Rx_data = OFDMrev(filename)
 %
@@ -8,7 +8,7 @@ function [Rx_data, Rx_sound, BERs] = OFDM_rev(filename)
     Rx_sound = Rx_sound';
 
 % ========================== 找到信号位置 ==========================
-    desire_len = (config.IFFT_length + config.GI) * config.symbol_per_carrier;
+    desire_len = (config.IFFT_length + config.GI) * config.symbol_per_carrier + config.GIP;
     % Rx_sum = [];
     tmp = sum(abs(Rx_sound(1:desire_len)));
     max_sum = 0;
@@ -25,11 +25,19 @@ function [Rx_data, Rx_sound, BERs] = OFDM_rev(filename)
 
 % ========================== 解码 ==========================
     BERs = [];
+    minBER = 1;
     % for targ = (target - desire_len / 2):(target + desire_len / 2)
     for targ = target:target
         Rx_data = Rx_sound(targ:(targ + desire_len - 1));
-        Rx_cidata_mat = reshape(Rx_data, config.IFFT_length + config.GI, config.symbol_per_carrier)';
-        Rx_data_mat = Rx_cidata_mat(:, config.GI + 1:(config.IFFT_length + config.GI));
+
+        Rx_cidata_mat = zeros(config.symbol_per_carrier,...
+            config.IFFT_length + config.GI + config.GIP);
+        for i = 1:config.symbol_per_carrier;
+            Rx_cidata_mat(i,:)=Rx_data(1,(i-1)*(config.IFFT_length+config.GI)+1:i*(config.IFFT_length+config.GI)+config.GIP);%串并变换
+        end
+        Rx_data_mat = Rx_cidata_mat(:,config.GI+1:config.IFFT_length+config.GI);%去除循环前缀与循环后缀，得到有用信号矩阵
+        % Rx_cidata_mat = reshape(Rx_data, config.IFFT_length + config.GI, config.symbol_per_carrier)';
+        % Rx_data_mat = Rx_cidata_mat(:, config.GI + 1:(config.IFFT_length + config.GI));
 
         Y = fft(Rx_data_mat, config.IFFT_length, 2);
         Rx_carriers = Y(:,config.carriers);
@@ -59,6 +67,10 @@ function [Rx_data, Rx_sound, BERs] = OFDM_rev(filename)
         BER = error_bits / length(bits);
         % fprintf('BER: %f\n', error_bits / length(bits));
         BERs = [BERs, BER];
+        if BER < minBER
+            minBER = BER;
+            min_pos = targ;
+        end
     end
 end
 

@@ -26,8 +26,8 @@ function Tx_data = OFDM(bits)
 
     IFFT_res = ifft(IFFT_mod, config.IFFT_length, 2);
 
-% ======================== 循环前缀 ============================
-    time_mat_cp = zeros(config.symbol_per_carrier, config.IFFT_length + config.GI);
+% ======================== 循环前后缀 ============================
+    time_mat_cp = zeros(config.symbol_per_carrier, config.IFFT_length + config.GI + config.GIP);
     for k = 1:config.symbol_per_carrier
         for i = 1:config.GI
             time_mat_cp(k, i) = IFFT_res(k, i + config.IFFT_length - config.GI);
@@ -35,15 +35,37 @@ function Tx_data = OFDM(bits)
         for i = 1:config.IFFT_length
             time_mat_cp(k, i + config.GI) = IFFT_res(k, i);
         end
+        for i = 1:config.GIP
+            time_mat_cp(k, config.IFFT_length + config.GI + i) = IFFT_res(k, i);
+        end
+    end
+
+% ======================== 信号加窗 ==============================
+    windowed_time_mat_cp = zeros(config.symbol_per_carrier, config.IFFT_length + config.GI + config.GIP);
+    for i = 1:config.symbol_per_carrier %12
+        %加窗  升余弦窗
+        windowed_time_mat_cp(i,:) = real(time_mat_cp(i,:)).*rcoswindow(...
+            config.beta, config.IFFT_length + config.GI)';
     end
 
 % ======================== 并转串 ==============================
-    Tx_data = reshape(time_mat_cp', (config.symbol_per_carrier) * (config.IFFT_length + config.GI),1)';
+    % Tx_data = reshape(time_mat_cp', (config.symbol_per_carrier) * (config.IFFT_length + config.GI),1)';
+    windowed_Tx_data = zeros(1,config.symbol_per_carrier*(config.IFFT_length + config.GI)+config.GIP);
+    windowed_Tx_data(1:config.IFFT_length + config.GI + config.GIP) = windowed_time_mat_cp(1,:);
+    for i = 1:config.symbol_per_carrier - 1;
+        windowed_Tx_data((config.IFFT_length + config.GI)*i+1:(...
+            config.IFFT_length + config.GI)*(i+1)+config.GIP)=...
+            windowed_time_mat_cp(i+1,:);%并串转换，循环后缀与循环前缀相叠加
+    end
 
 % ====================== 写入声音文件 =========================
     % sound_wav = Tx_data .* cos(2 * pi * Fc/Fs*(0:length(Tx_data) - 1));
-    sound_wav = Tx_data;
+    Tx_data = windowed_Tx_data;
+    sound_wav = 10 * Tx_data;
     audiowrite('data/message.wav', sound_wav, config.Fs);
+    plot(Tx_data);
+    hold on;
+    plot(sound_wav);
 end
 
 
