@@ -1,56 +1,59 @@
-clear all;
-close all;
-
-carrier_count = 200; %子载波数
-symbol_per_carrier = 12; % 每个子载波符号数
-bits_per_symbol = 4; %每个符号比特数
-IFFT_length = 512; %FFT点数
-PrefixRatio = 1/4; %保护间隔与OFDM数据的比例 1/6~1/4
-GI = PrefixRatio * IFFT_length; % 每一个OFDM符号添加的循环前缀长度为1/4*IFFT_length
-SNR = 15; %信噪比15dB
-
-Fc = 18000; %声音信号频率
-Fs = 44100; %声音信号采样率
-
-
+function Tx_data = OFDM(bits)
+%
+% Syntax: Tx_data = OFDM(bits)
+%
+    config = ofdm_config();
 % ======================== 信号产生 ========================
-baseband_length = carrier_count * symbol_per_carrier * bits_per_symbol;
-carriers = (1:carrier_count) + (floor(IFFT_length / 4) - floor(carrier_count / 2));
-conjugate_carriers = IFFT_length - carriers + 2;
-bits = round(rand(1, baseband_length))
-bit_file = fopen('data.txt', 'w');
-fprintf(bit_file, "%d\n", bits);
-fclose(bit_file);
+    bit_file = fopen('data/data.txt', 'w');
+    fprintf(bit_file, "%d\n", bits);
+    fclose(bit_file);
 % =========================================================
 
-complex_data = QAM16(bits);
-complex_mat = reshape(complex_data', carrier_count, symbol_per_carrier)';
+% ======================== 编码映射 ============================
+    if config.modulate == 1
+        complex_data = QAM16(bits);
+    elseif config.modulate == 2
+        complex_data = QPSK(bits);
+    else
+        complex_data = BPSK(bits);
+    end
+    complex_mat = reshape(complex_data', config.carrier_count, config.symbol_per_carrier)';
+
+% ======================== IFFT ============================
+    IFFT_mod = zeros(config.symbol_per_carrier, config.IFFT_length);
+    IFFT_mod(:, config.carriers) = complex_mat;
+    IFFT_mod(:, config.conjugate_carriers) = conj(complex_mat);
+
+    IFFT_res = ifft(IFFT_mod, config.IFFT_length, 2);
+
+% ======================== 循环前缀 ============================
+    time_mat_cp = zeros(config.symbol_per_carrier, config.IFFT_length + config.GI);
+    for k = 1:config.symbol_per_carrier
+        for i = 1:config.GI
+            time_mat_cp(k, i) = IFFT_res(k, i + config.IFFT_length - config.GI);
+        end
+        for i = 1:config.IFFT_length
+            time_mat_cp(k, i + config.GI) = IFFT_res(k, i);
+        end
+    end
+
+% ======================== 并转串 ==============================
+    Tx_data = reshape(time_mat_cp', (config.symbol_per_carrier) * (config.IFFT_length + config.GI),1)';
+
+% ====================== 写入声音文件 =========================
+    % sound_wav = Tx_data .* cos(2 * pi * Fc/Fs*(0:length(Tx_data) - 1));
+    sound_wav = Tx_data;
+    audiowrite('data/message.wav', sound_wav, config.Fs);
+end
+
+
+
 % figure(1);
 % plot(complex_mat, '*r');
 % title('16QAM Constellation');
 % axis([-4, 4, -4, 4]);
 % grid on;
 
-% ======================== IFFT ============================
-IFFT_mod = zeros(symbol_per_carrier, IFFT_length);
-IFFT_mod(:, carriers) = complex_mat;
-IFFT_mod(:, conjugate_carriers) = conj(complex_mat);
-
-IFFT_res = ifft(IFFT_mod, IFFT_length, 2);
-
-% 添加循环前缀
-time_mat_cp = zeros(symbol_per_carrier, IFFT_length + GI);
-for k = 1:symbol_per_carrier
-    for i = 1:GI
-        time_mat_cp(k, i) = IFFT_res(k, i + IFFT_length - GI);
-    end
-    for i = 1:IFFT_length
-        time_mat_cp(k, i + GI) = IFFT_res(k, i);
-    end
-end
-
-% ======================== 并转串 ==============================
-Tx_data = reshape(time_mat_cp', (symbol_per_carrier) * (IFFT_length+GI),1)';
 
 % ======================== 噪声 ========================
 % Tx_signal_power = var(Tx_data);
@@ -63,11 +66,6 @@ Tx_data = reshape(time_mat_cp', (symbol_per_carrier) * (IFFT_length+GI),1)';
 % noise = wgn(1,length(Tx_data),n_sigma,'complex');
 % =====================================================
 
-
-% ====================== 写入声音文件 =========================
-% sound_wav = Tx_data .* cos(-2 * pi * Fc/Fs*(0:length(Tx_data) - 1));
-sound_wav = Tx_data;
-audiowrite('message.wav', sound_wav, Fs);
 
 % === pic ===
 % tran_time = (symbol_per_carrier) * (IFFT_length+GI);
@@ -105,5 +103,5 @@ audiowrite('message.wav', sound_wav, Fs);
 
 % bits == Rx_bits
 
-[Rx_sound, Fs] = audioread('message.wav');
-Rx_data = Rx_sound.*cos(-2*pi*Fc/Fs*(0:length(Rx_sound)-1)).';
+% [Rx_sound, Fs] = audioread('message.wav');
+% Rx_data = Rx_sound.*cos(-2*pi*Fc/Fs*(0:length(Rx_sound)-1)).';
