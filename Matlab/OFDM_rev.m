@@ -9,6 +9,7 @@ function [Rx_data, Rx_sound, BERs, min_pos] = OFDM_rev(filename)
 
 % ========================== 找到信号位置 ==========================
     desire_len = (config.IFFT_length + config.GI) * config.symbol_per_carrier + config.GIP;
+    inds = Sync(Rx_sound, desire_len)
     % Rx_sum = [];
     tmp = sum(abs(Rx_sound(1:desire_len)));
     max_sum = 0;
@@ -26,8 +27,8 @@ function [Rx_data, Rx_sound, BERs, min_pos] = OFDM_rev(filename)
 % ========================== 解码 ==========================
     BERs = [];
     minBER = 1;
-    % for targ = (target - desire_len / 2):(target + desire_len / 2)
-    for targ = target:target
+    for targ = max(1,(target - desire_len / 2)):(target + floor(desire_len / 2))
+    % for targ = target:target
         Rx_data = Rx_sound(targ:(targ + desire_len - 1));
 
         Rx_cidata_mat = zeros(config.symbol_per_carrier,...
@@ -49,11 +50,11 @@ function [Rx_data, Rx_sound, BERs, min_pos] = OFDM_rev(filename)
         Rx_serial_complex_symbols = reshape(Rx_complex_mat', 1, size(Rx_complex_mat, 1) * size(Rx_complex_mat, 2))';
 
         if config.modulate == 1
-            Rx_bits = DmodQAM16(Rx_serial_complex_symbols);
+            Rx_bits = DmodQAM16(Rx_serial_complex_symbols, config.d);
         elseif config.modulate == 2
-            Rx_bits = DmodQPSK(Rx_serial_complex_symbols);
+            Rx_bits = DmodQPSK(Rx_serial_complex_symbols, config.d);
         else
-            Rx_bits = DmodBPSK(Rx_serial_complex_symbols);
+            Rx_bits = DmodBPSK(Rx_serial_complex_symbols, config.d);
         end
         
     % ========================== BER计算 ==========================

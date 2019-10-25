@@ -1,21 +1,15 @@
-function Tx_data = OFDM(bits)
+function Tx_data = OFDM(config, bits)
 %
 % Syntax: Tx_data = OFDM(bits)
 %
-    config = ofdm_config();
-% ======================== 信号产生 ========================
-    bit_file = fopen('data/data.txt', 'w');
-    fprintf(bit_file, "%d\n", bits);
-    fclose(bit_file);
-% =========================================================
 
 % ======================== 编码映射 ============================
     if config.modulate == 1
-        complex_data = QAM16(bits);
+        complex_data = QAM16(bits, config.d);
     elseif config.modulate == 2
-        complex_data = QPSK(bits);
+        complex_data = QPSK(bits, config.d);
     else
-        complex_data = BPSK(bits);
+        complex_data = BPSK(bits, config.d);
     end
     complex_mat = reshape(complex_data', config.carrier_count, config.symbol_per_carrier)';
 
@@ -43,7 +37,7 @@ function Tx_data = OFDM(bits)
 % ======================== 信号加窗 ==============================
     windowed_time_mat_cp = zeros(config.symbol_per_carrier, config.IFFT_length + config.GI + config.GIP);
     for i = 1:config.symbol_per_carrier %12
-        %加窗  升余弦窗
+        %加窗 升余弦窗
         windowed_time_mat_cp(i,:) = real(time_mat_cp(i,:)).*rcoswindow(...
             config.beta, config.IFFT_length + config.GI)';
     end
@@ -58,14 +52,22 @@ function Tx_data = OFDM(bits)
             windowed_time_mat_cp(i+1,:);%并串转换，循环后缀与循环前缀相叠加
     end
 
+% ======================== 加入Preamble ==============================
+    % pre_single = ones(1, config.preamble_length);% * max(abs(windowed_Tx_data));
+    % preamble = [pre_single, -pre_single, pre_single, -pre_single, pre_single, -pre_single];
+    % pre_ind = floor(config.preamble_length / 3);
+    % pre_mod(pre_ind) = 4*config.d;
+    % pre_mod(config.preamble_length + 2 - pre_ind) = 4*config.d;
+    % preamble =  * cos(2 * pi * 12000 / config.Fs * (1:config.preamble_length));
+    % preamble = ifft(pre_mod, config.preamble_length, 2);
+
+    % Tx_data = [preamble, windowed_Tx_data];
+    Tx_data = windowed_Tx_data;
+
 % ====================== 写入声音文件 =========================
     % sound_wav = Tx_data .* cos(2 * pi * Fc/Fs*(0:length(Tx_data) - 1));
-    Tx_data = windowed_Tx_data;
-    sound_wav = 10 * Tx_data;
+    sound_wav = Tx_data;
     audiowrite('data/message.wav', sound_wav, config.Fs);
-    plot(Tx_data);
-    hold on;
-    plot(sound_wav);
 end
 
 
@@ -109,17 +111,17 @@ end
 % ======================== 接收端 ==============================
 % Rx_data = Tx_data;
 
-% % 去除循环前缀
+% % ?��?�循????�?
 % Rx_cidata_mat = reshape(Rx_data, IFFT_length + GI, symbol_per_carrier)';
 % Rx_data_mat = Rx_cidata_mat(:, GI + 1:IFFT_length + GI);
 
 % Y = fft(Rx_data_mat, IFFT_length, 2);
 % Rx_carriers = Y(:,carriers);
-% Rx_phase = angle(Rx_carriers); %接收信号的相位
-% Rx_mag = abs(Rx_carriers); %接收信号的幅度
+% Rx_phase = angle(Rx_carriers); %?��?�信?��???��?
+% Rx_mag = abs(Rx_carriers); %?��?�信?��??�?�?
 
-% [M, N] = pol2cart(Rx_phase, Rx_mag); %将极坐标转化为直角坐标
-% Rx_complex_mat = complex(M, N); %创建复数
+% [M, N] = pol2cart(Rx_phase, Rx_mag); %�???????�???为�?��?????
+% Rx_complex_mat = complex(M, N); %??建�???
 % Rx_serial_complex_symbols = reshape(Rx_complex_mat', 1, size(Rx_complex_mat, 1) * size(Rx_complex_mat, 2))';
 % Rx_bits = DmodQAM16(Rx_serial_complex_symbols)
 

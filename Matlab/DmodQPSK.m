@@ -1,10 +1,10 @@
-function bits = DmodQPSK(input)
+function bits = DmodQPSK(input, d)
 %
 % Syntax: bits = DmodQPSK(input)
 %
 % input: complex qpsk vector (col)
 % output: bitdata vector (row)
-    mapping = [1-1i -1+1i 1+1i -1-1i];
+    mapping = [complex(d, -d) complex(-d, d) complex(d, d) complex(-d, -d)];
     for i = 1:length(input)
         for j = 1:4
             dis(j) = abs(input(i, 1) - mapping(j));

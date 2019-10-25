@@ -1,10 +1,10 @@
-function [bpsk_data] = BPSK(bits)
+function [bpsk_data] = BPSK(bits, d)
 %
 % Syntax: [bpsk_data] = BPSK(bits)
 %
 % input: bitdata vector (row)
 % output: complex bpsk vector (col)
-    mapping = [1 -1];
+    mapping = [d -d];
     source = [];
     for i = 1:length(bits)
         source = [source, 1 + bits(i)];

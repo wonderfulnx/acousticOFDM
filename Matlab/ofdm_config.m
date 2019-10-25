@@ -3,15 +3,17 @@ function [config] = ofdm_config()
 %
 % Syntax: [config], ofdm_config()
 %
-% Return the ofdm config info
+% Return the default ofdm config info
     % 子载波数
-    config.carrier_count = 16;
+    config.carrier_count = 8;
     % 每个子载波符号数
-    config.symbol_per_carrier = 8;
+    config.symbol_per_carrier = 1;
     % 每个符号比特数
     config.bits_per_symbol = 2;
+    % 每个符号距离
+    config.d = 5;
     % FFT点数
-    config.IFFT_length = 1024;
+    config.IFFT_length = 512;
     % 保护间隔与OFDM数据的比例 1/6~1/4
     config.PrefixRatio = 1/4;
     % 每一个OFDM符号添加的循环前缀长度为1/4*IFFT_length
@@ -25,11 +27,11 @@ function [config] = ofdm_config()
     % 声音信号频率
     config.Fc = 17000;
     % 声音信号采样率
-    config.Fs = 44100;
+    config.Fs = 10000;
     % 基带信息长度
     config.baseband_length = config.carrier_count * config.symbol_per_carrier * config.bits_per_symbol;
     % 载波频率（通过频谱的位置确定
-    config.carriers = (1:config.carrier_count) + (floor(config.IFFT_length / 3) - floor(config.carrier_count / 2));
+    config.carriers = (1:config.carrier_count) + (floor(config.IFFT_length / 5) - floor(config.carrier_count / 2));
     config.conjugate_carriers = config.IFFT_length - config.carriers + 2;
     % 调制方式, 1 -> qam16, 2 -> qpsk, 3 -> bpsk
     config.modulate = 2;

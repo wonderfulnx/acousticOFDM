@@ -1,11 +1,10 @@
-function bits = DmodQAM16(input)
+function bits = DmodQAM16(input， d)
 % dmodQAM - demodule QAM16
 %
 % Syntax: bits = DmodQAM16(input)
 %
 % input: complex qam vector (col)
 % output: bitdata vector (row)
-    d = 1;
     mapping = [
         -3*d  3*d; -d  3*d; d  3*d; 3*d  3*d;
         -3*d    d; -d    d; d    d; 3*d    d;
