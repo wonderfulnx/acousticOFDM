@@ -1,11 +1,10 @@
-function [qam_data] = QAM16(bits)
+function [qam_data] = QAM16(bits, d)
 % QAM16 - use 16 QAM to modulate input bit data
 %
 % Syntax: [qam_data] = QAM16(bits)
 %
 % input: bitdata vector (row)
 % output: complex qam vector (col)
-    d = 1;
     mapping = [
         -3*d  3*d; -d  3*d; d  3*d; 3*d  3*d;
         -3*d    d; -d    d; d    d; 3*d    d;
