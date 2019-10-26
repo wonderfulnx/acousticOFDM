@@ -19,7 +19,7 @@ import java.util.Date;
 
 
 public class Recorder extends Thread {
-    private int SamplingRate = 44100;
+    private int SamplingRate = 10000;
     private int channelConfiguration = AudioFormat.CHANNEL_IN_MONO;
     private int audioEncoding = AudioFormat.ENCODING_PCM_16BIT;
     private int bufferSize = 0;
@@ -29,7 +29,7 @@ public class Recorder extends Thread {
 
     @Override
     public void run() {
-        startRecord();
+        this.startRecord();
         Date now = Calendar.getInstance().getTime();
         String path = Environment.getExternalStorageDirectory() + "/OFDMRecorder/" +
                 now.toString() + ".wav";
@@ -68,6 +68,8 @@ public class Recorder extends Thread {
             }
             audioRecord.stop();
             dos.close();
+            bos.close();
+            os.close();
         } catch (Throwable t){
             Log.e("MainActivity", "failed to record");
         }
@@ -80,7 +82,7 @@ public class Recorder extends Thread {
         //wav文件比原始数据文件多出了44个字节，除去表头和文件大小的8个字节剩余文件长度比原始数据多36个字节
         long totalDataLen = totalAudioLen + 36;
         long longSampleRate = SamplingRate;
-        int channels = 2;
+        int channels = 1;
         //每分钟录到的数据的字节数
         long byteRate = 16 * SamplingRate * channels / 8;
 

@@ -7,40 +7,75 @@
     tools:context=".MainActivity">
 
     <Button
-        android:id="@+id/record"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:id="@+id/generate"
+        android:layout_width="344dp"
+        android:layout_height="53dp"
         android:layout_marginStart="143dp"
+        android:layout_marginTop="12dp"
         android:layout_marginEnd="143dp"
-        android:layout_marginBottom="200dp"
-        android:text="@string/record_btn"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:text="@string/generate_btn"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.502"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editText" />
+
+    <Button
+        android:id="@+id/record"
+        android:layout_width="344dp"
+        android:layout_height="53dp"
+        android:layout_marginStart="143dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="143dp"
+        android:text="@string/record_btn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.502"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/play" />
+
+    <Button
+        android:id="@+id/analyze"
+        android:layout_width="344dp"
+        android:layout_height="53dp"
+        android:layout_marginStart="143dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="143dp"
+        android:text="@string/analyze_btn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.502"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/record" />
+
+    <Button
+        android:id="@+id/play"
+        android:layout_width="344dp"
+        android:layout_height="53dp"
+        android:layout_marginStart="143dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="143dp"
+        android:text="@string/play_btn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.502"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/generate" />
 
     <EditText
         android:id="@+id/editText"
         android:layout_width="349dp"
         android:layout_height="350dp"
         android:layout_marginStart="97dp"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="28dp"
         android:layout_marginEnd="97dp"
-        android:layout_marginBottom="80dp"
         android:autoText="false"
         android:editable="false"
-        android:textIsSelectable="true"
-        android:scrollbars="vertical"
         android:ems="10"
         android:gravity="start|top"
-        android:inputType="textMultiLine"
         android:hint="@string/editText"
+        android:inputType="textMultiLine"
+        android:scrollbars="vertical"
+        android:textIsSelectable="true"
         android:textSize="18sp"
-        app:layout_constraintBottom_toTopOf="@+id/record"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
