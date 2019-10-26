@@ -18,19 +18,21 @@ function Rx_data = Sync(con_pre, con, Rx_sound)
     plot(xpeak, Rx_sum(xpeak),'*r');
 
     % 匹配Preamble
-    finals = [];
+    pre_inds = [];
     for i = max(0, target - preamble_len / 2):target + preamble_len / 2
         bits = OFDM_dmod(con_pre, Rx_sound(i:i + preamble_len - 1));
         if bits == con_pre.preamble
-            finals=[finals, i + preamble_len * 2];
+            pre_inds = [pre_inds, i];
         end
     end
-    if isempty(finals)
+
+    if isempty(pre_inds)
         fprintf("No Preamble Found...\n");
         Rx_data = [];
     else
-        fprintf("Preamble found!\n");
-        final = finals(floor(length(finals)/2));
+        fprintf("Preamble found! match num: %d\n", length(pre_inds));
+        index = floor((length(pre_inds)) / 2);
+        final = pre_inds(index) + preamble_len * 2;
         Rx_data = Rx_sound(final:final + data_len - 1);
     end
 end

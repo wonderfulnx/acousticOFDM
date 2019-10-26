@@ -1,4 +1,4 @@
-function [Rx_bits] = OFDM_dmod(config, Rx_data)
+function [Rx_bits, Rx_complex_mat] = OFDM_dmod(config, Rx_data)
 %
 % Syntax: [Rx_bits] = OFDM_dmod(config, Rx_data)
 %
@@ -29,13 +29,5 @@ function [Rx_bits] = OFDM_dmod(config, Rx_data)
         Rx_bits = DmodQPSK(Rx_serial_complex_symbols, config.d);
     else
         Rx_bits = DmodBPSK(Rx_serial_complex_symbols, config.d);
-    end
-
-    if config.carrier_count == 16
-        figure();
-        plot(Rx_complex_mat,'*r');%XY坐标接收信号的星座图
-        fig_len = 4 * config.d;
-        axis([-fig_len, fig_len, -fig_len, fig_len]);
-        grid on
     end
 end
