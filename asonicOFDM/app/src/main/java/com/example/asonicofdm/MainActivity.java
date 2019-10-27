@@ -27,11 +27,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         getPermission();
 
-
-        // DEBUG AREA
-        OFDMConfig con = new OFDMConfig(false);
-        OFDMConfig con_pre = new OFDMConfig(true);
-
         // editText init
         this.editText = this.findViewById(R.id.editText);
         this.editText.setKeyListener(null);
@@ -42,6 +37,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 // generate signal and show text
+                // DEBUG AREA
+                OFDMConfig con = new OFDMConfig(false);
+                OFDMConfig con_pre = new OFDMConfig(true);
+                double[] Preamble = OFDM.modulate(con_pre, con_pre.preamble);
+                int[] bits =  Utils.generate_rand(con.baseband_length);
+                MainActivity.this.logToDisplay("Generate Binary: " + Utils.bin2str(bits));
+                double[] Tx_data = OFDM.modulate(con, bits);
+                Utils.writeMessage(Preamble, Tx_data);
             }
         });
 

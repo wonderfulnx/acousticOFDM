@@ -115,7 +115,7 @@ public class Recorder extends Thread {
     }
 
 
-    private void WriteWaveFileHeader(FileOutputStream out, long totalAudioLen,
+    public static void WriteWaveFileHeader(FileOutputStream out, long totalAudioLen,
                                      long totalDataLen, long longSampleRate, int channels, long byteRate)
             throws IOException {
         byte[] header = new byte[44];
