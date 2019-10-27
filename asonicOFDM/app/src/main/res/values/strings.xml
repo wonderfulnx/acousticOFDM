@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">AsonicOFDM</string>
+    <string name="editText" translatable="false">Log Area</string>
+    <string name="generate_btn">Generate Signal</string>
+    <string name="play_btn">Play Record</string>
+    <string name="record_btn">Start Record</string>
+    <string name="analyze_btn">Analyze Record</string>
+    <string name="clear_btn">Clear Log</string>
+</resources>
