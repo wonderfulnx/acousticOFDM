@@ -11,30 +11,32 @@ function Rx_data = Sync(con_pre, con, Rx_sound)
     % 找到第一个尖峰的起始
     [xpeak,locs] = findallpeaks(1:length(Rx_sum), Rx_sum, 3, preamble_len / 10);
     [xpeak,locs] = findallpeaks(locs, Rx_sum(locs), 3, 0);
-    target = xpeak(1) - preamble_len / 2;
+    for attempt = 1:min(3, length(xpeak))
+        target = xpeak(attempt) - preamble_len / 2;
 
-    figure();
-    plot(1:length(Rx_sum), Rx_sum,'linewidth',2); hold on; 
-    plot(xpeak, Rx_sum(xpeak),'*r');
+        figure();
+        plot(1:length(Rx_sum), Rx_sum,'linewidth',2); hold on; 
+        plot(xpeak, Rx_sum(xpeak),'*r');
 
-    % 匹配Preamble
-    pre_inds = [];
-    for i = max(0, target - preamble_len / 2):target + preamble_len / 2
-        bits = OFDM_dmod(con_pre, Rx_sound(i:i + preamble_len - 1));
-        if bits == con_pre.preamble
-            pre_inds = [pre_inds, i];
+        % 匹配Preamble
+        pre_inds = [];
+        for i = max(0, target - preamble_len / 2):target + preamble_len / 2
+            bits = OFDM_dmod(con_pre, Rx_sound(i:i + preamble_len - 1));
+            if bits == con_pre.preamble
+                pre_inds = [pre_inds, i];
+            end
+        end
+
+        if ~isempty(pre_inds)
+            fprintf("Preamble found! match num: %d\n", length(pre_inds));
+            index = floor((length(pre_inds)) / 2);
+            final = pre_inds(index) + preamble_len * 2;
+            Rx_data = Rx_sound(final:final + data_len - 1);
+            return;
         end
     end
-
-    if isempty(pre_inds)
-        fprintf("No Preamble Found...\n");
-        Rx_data = [];
-    else
-        fprintf("Preamble found! match num: %d\n", length(pre_inds));
-        index = floor((length(pre_inds)) / 2);
-        final = pre_inds(index) + preamble_len * 2;
-        Rx_data = Rx_sound(final:final + data_len - 1);
-    end
+    fprintf("No Preamble Found...\n");
+    Rx_data = [];
 end
 
 % ========================== 计算绝对值积分 ==========================

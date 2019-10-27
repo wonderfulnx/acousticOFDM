@@ -12,12 +12,13 @@ if isempty(Rx_data)
     return
 end
 
-figure();
-plot(Tx_data);hold on;
-plot(Rx_data);
 
 % ========================== 解码 ==========================
 [Rx_bits, Rx_complex_mat] = OFDM_dmod(con, Rx_data);
+
+figure();
+plot(Tx_data);hold on;
+plot(Rx_data);
 
 figure();
 plot(Rx_complex_mat,'*r');%XY坐标接收信号的星座图
