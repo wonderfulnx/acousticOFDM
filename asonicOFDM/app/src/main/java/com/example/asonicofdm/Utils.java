@@ -6,11 +6,7 @@ import android.util.Log;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.security.MessageDigest;
 
 public class Utils {
     public static String messageFilePath = Environment.getExternalStorageDirectory() + "/OFDMRecorder/message.wav";
@@ -76,13 +72,6 @@ public class Utils {
     }
 
     public static byte[] doubles2bytes(double[] ds) {
-//        byte[] ans = new byte[8 * ds.length];
-//        for (int i = 0; i < ds.length; i++) {
-//            long val = Double.doubleToRawLongBits(ds[i]);
-//            for (int j = 0; j < 8; j++)
-//                ans[i * 8 + j] = (byte)((val >> (8 * i)) & 0xff);
-//        }
-//        return ans;
         byte[] ans = new byte[2 * ds.length];
         int idx = 0;
         for (final double dval: ds) {
@@ -92,14 +81,6 @@ public class Utils {
         }
         return ans;
     }
-
-//    public static double[] bytes2doubles(byte[] bs) {
-//        double[] ans = new double[bs.length / 8];
-//        for (int i = 0; i < bs.length; i += 8) {
-//            long val = 0;
-//            for (int j = 0; j < 8; j++) val |= ((long)(bs[8 * i + j] && 0xff) << (8 * i));
-//        }
-//    }
 
     public static void writeMessage(double[] Preamble, double[] Tx_data) {
         File file = new File(messageFilePath);
@@ -146,21 +127,6 @@ public class Utils {
         } catch (IOException e) {
             Log.e("Main Activity", "Error Occur");
         }
-
-//        // DEBUG
-//        String path = Environment.getExternalStorageDirectory() + "/OFDMRecorder/raw.txt";
-//        File file = new File(path);
-//        if (file.exists()) file.delete();
-//        try { file.createNewFile(); } catch (IOException e){
-//            throw new IllegalStateException("unable to create " + file.toString());
-//        }
-//        try {
-//            PrintWriter pw = new PrintWriter(new FileWriter(path));
-//            for (double d: res) pw.println(d);
-//            pw.close();
-//        } catch (IOException e) {
-//            Log.e("Main Activity", "Rua");
-//        }
 
         return res;
     }
