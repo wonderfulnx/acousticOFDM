@@ -30,11 +30,11 @@ public class Recorder extends Thread {
     @Override
     public void run() {
         this.startRecord();
-        Date now = Calendar.getInstance().getTime();
-        String path = Environment.getExternalStorageDirectory() + "/OFDMRecorder/" +
-                now.toString() + ".wav";
+        String path = Environment.getExternalStorageDirectory() + "/OFDMRecorder/receive.wav";
+        File file = new File(path);
+        if (file.exists()) file.delete();
         try {
-            new File(path).createNewFile();
+            file.createNewFile();
         } catch (IOException e) {
             throw new IllegalStateException("unable to create " + path);
         }

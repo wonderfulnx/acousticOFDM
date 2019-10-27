@@ -4,12 +4,18 @@ import android.os.Environment;
 import android.util.Log;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.security.MessageDigest;
 
 public class Utils {
+    public static String messageFilePath = Environment.getExternalStorageDirectory() + "/OFDMRecorder/message.wav";
+    public static String rawFilePath = Environment.getExternalStorageDirectory() + "/OFDMRecorder/raw.wav";
+
     public static int[] generate_rand(int length) {
         // 生成随机二进制串
         int[] res = new int[length];
@@ -96,8 +102,7 @@ public class Utils {
 //    }
 
     public static void writeMessage(double[] Preamble, double[] Tx_data) {
-        String filePath = Environment.getExternalStorageDirectory() + "/OFDMRecorder/message.wav";
-        File file = new File(filePath);
+        File file = new File(messageFilePath);
         if (file.exists()) file.delete();
         try { file.createNewFile(); } catch (IOException e){
             throw new IllegalStateException("unable to create " + file.toString());
@@ -126,4 +131,43 @@ public class Utils {
         return;
     }
 
+    public static double[] readRaw() {
+        double [] res = {};
+        try {
+            FileInputStream in = new FileInputStream(rawFilePath);
+            long audioLen = in.getChannel().size();
+            res = new double[(int)(audioLen / 2)];
+            int ind = 0;
+            byte[] buff = new byte[2];
+            while (in.read(buff) != -1) {
+                short s = (short)((buff[1] & 0x00ff) << 8 | buff[0] & 0x00ff);
+                res[ind++] = s / 32768f;
+            }
+        } catch (IOException e) {
+            Log.e("Main Activity", "Error Occur");
+        }
+
+//        // DEBUG
+//        String path = Environment.getExternalStorageDirectory() + "/OFDMRecorder/raw.txt";
+//        File file = new File(path);
+//        if (file.exists()) file.delete();
+//        try { file.createNewFile(); } catch (IOException e){
+//            throw new IllegalStateException("unable to create " + file.toString());
+//        }
+//        try {
+//            PrintWriter pw = new PrintWriter(new FileWriter(path));
+//            for (double d: res) pw.println(d);
+//            pw.close();
+//        } catch (IOException e) {
+//            Log.e("Main Activity", "Rua");
+//        }
+
+        return res;
+    }
+
+    public static boolean bits_equal(int[] a, int [] b) {
+        int len = a.length;
+        for (int i = 0; i < len; i++) if (a[i] != b[i]) return false;
+        return true;
+    }
 }

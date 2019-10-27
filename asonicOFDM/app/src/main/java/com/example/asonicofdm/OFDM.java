@@ -50,5 +50,22 @@ public class OFDM {
         return Tx_data;
     }
 
-    public static 
+    public static int[] demodulate(OFDMConfig config, double[] Rx_data) {
+        Complex[] rx_ifft = new Complex[config.IFFT_length];
+        Complex[] demod = new Complex[config.carrier_count];
+        int[] result = new int[config.baseband_length];
+        int ind = 0;
+        for (int sym_cnt = 0; sym_cnt < config.symbol_per_carrier; sym_cnt++) {
+            for (int i = config.GI; i < config.GI + config.IFFT_length; i++)
+                rx_ifft[i - config.GI] = new Complex(Rx_data[sym_cnt * (config.GI + config.IFFT_length) + i], 0);
+            Complex[] Y = FFT.fft(rx_ifft);
+
+            for (int i = 0; i < config.carrier_count; i++)
+                demod[i] = Y[config.carriers[i]];
+
+            int[] bits = Utils.dmod_qpsk(demod, config.d);
+            for (int bit: bits) result[ind++] = bit;
+        }
+        return result;
+    }
 }

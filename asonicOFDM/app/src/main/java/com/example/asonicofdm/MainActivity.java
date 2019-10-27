@@ -5,6 +5,7 @@ import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 
 import android.util.Log;
@@ -12,12 +13,15 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import java.io.IOException;
+
 public class MainActivity extends AppCompatActivity {
     protected static final String TAG = "RecordActivity";
     private Button generate_btn;
     private Button play_btn;
     private Button record_btn;
     private Button analyze_btn;
+    private Button clear_btn;
     private EditText editText;
     private Recorder recorder;
 
@@ -37,11 +41,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 // generate signal and show text
-                // DEBUG AREA
                 OFDMConfig con = new OFDMConfig(false);
                 OFDMConfig con_pre = new OFDMConfig(true);
                 double[] Preamble = OFDM.modulate(con_pre, con_pre.preamble);
-                int[] bits =  Utils.generate_rand(con.baseband_length);
+                int[] bits = Utils.generate_rand(con.baseband_length);
                 MainActivity.this.logToDisplay("Generate Binary: " + Utils.bin2str(bits));
                 double[] Tx_data = OFDM.modulate(con, bits);
                 Utils.writeMessage(Preamble, Tx_data);
@@ -51,10 +54,35 @@ public class MainActivity extends AppCompatActivity {
         // play signal init
         this.play_btn = this.findViewById(R.id.play);
         this.play_btn.setOnClickListener(new View.OnClickListener() {
-            boolean playing = false;
+
             @Override
             public void onClick(View view) {
                 // play signal
+                MediaPlayer mediaPlayer = new MediaPlayer();
+                try {
+                    mediaPlayer.setDataSource(Utils.messageFilePath);
+                    mediaPlayer.prepare();
+                    mediaPlayer.setLooping(false);
+                    mediaPlayer.start();
+
+                    MainActivity.this.generate_btn.setEnabled(false);
+                    MainActivity.this.play_btn.setEnabled(false);
+                    MainActivity.this.record_btn.setEnabled(false);
+                    MainActivity.this.analyze_btn.setEnabled(false);
+                    MainActivity.this.clear_btn.setEnabled(false);
+
+                    while (mediaPlayer.isPlaying());
+                    mediaPlayer.stop();
+                    mediaPlayer.release();
+
+                    MainActivity.this.generate_btn.setEnabled(true);
+                    MainActivity.this.play_btn.setEnabled(true);
+                    MainActivity.this.record_btn.setEnabled(true);
+                    MainActivity.this.analyze_btn.setEnabled(true);
+                    MainActivity.this.clear_btn.setEnabled(true);
+                } catch (IOException e) {
+                    Log.e(TAG, "unable to play source");
+                }
             }
         });
 
@@ -102,6 +130,25 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 // analyze the signal
+                OFDMConfig con = new OFDMConfig(false);
+                OFDMConfig con_pre = new OFDMConfig(true);
+                double[] Rx_sound = Utils.readRaw();
+                double[] Rx_data = Sync.sync(con_pre, con, Rx_sound);
+                if (Rx_data.length == 0)
+                    logToDisplay("No Preamble Found...");
+                else {
+                    int[] bits = OFDM.demodulate(con, Rx_data);
+                    logToDisplay("Received Bytes: " + Utils.bin2str(bits));
+                }
+            }
+        });
+
+        // clear btn init
+        this.clear_btn = this.findViewById(R.id.clear_btn);
+        this.clear_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                MainActivity.this.editText.setText("");
             }
         });
 
