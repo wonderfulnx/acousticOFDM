@@ -8,23 +8,24 @@ public class Sync {
         int preamble_len = con_pre.symbol_per_carrier * (con_pre.GI + con_pre.IFFT_length) + con_pre.GIP;
         int data_len = con.symbol_per_carrier * (con.GI + con.IFFT_length) + con.GIP;
 
+        if (preamble_len >= Rx_sound.length) return new double[]{};
         double[] Rx_sum = getSum(Rx_sound, preamble_len);
 
         // 找到峰值的target
         int[] x = new int[Rx_sum.length];
         for (int i = 0; i < Rx_sum.length; i++) x[i] = i;
-        int[] locs = findallpeaks(x, Rx_sum, 3, preamble_len/10);
+        int[] locs = findallpeaks(x, Rx_sum, 10, preamble_len/10);
         double[] y = new double[locs.length];
         for (int i = 0; i < y.length; i++) y[i] = Rx_sum[locs[i]];
-        int[] final_locs = findallpeaks(locs, y, 3, 0);
+        int[] final_locs = findallpeaks(locs, y, 10, 0);
 
-        for (int att = 0; att < 3 && att < final_locs.length; att++) {
+        for (int att = 0; att < 10 && att < final_locs.length; att++) {
 
             int target = locs[final_locs[att]] - preamble_len;
 
             // 匹配Preamble
             ArrayList<Integer> pre_inds = new ArrayList<>();
-            for (int i = target > 0 ? target : 0; i < target + preamble_len; i++) {
+            for (int i = target > 0 ? target : 0; i < target + preamble_len && i + preamble_len < Rx_sound.length; i++) {
                 double [] rx_data = new double[preamble_len];
                 for (int j = 0; j < preamble_len; j++) rx_data[j] = Rx_sound[i + j];
                 int[] bits = OFDM.demodulate(con_pre, rx_data);
@@ -54,9 +55,10 @@ public class Sync {
     }
 
     private static int[] findallpeaks(int[] x, double[] y, double threshold, int peakdistance) {
+        int N = x.length;
+        if (N < 3) return new int[]{};
         double[] y_cpy = y.clone();
         double[] markPeaks = dif(sign(dif(y_cpy)));
-        int N = x.length;
 
         // 估计最多可能出现的峰值数目P
         int P = 1;
