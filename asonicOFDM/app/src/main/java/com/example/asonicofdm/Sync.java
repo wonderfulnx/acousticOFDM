@@ -14,12 +14,12 @@ public class Sync {
         // 找到峰值的target
         int[] x = new int[Rx_sum.length];
         for (int i = 0; i < Rx_sum.length; i++) x[i] = i;
-        int[] locs = findallpeaks(x, Rx_sum, 3, preamble_len/10);
+        int[] locs = findallpeaks(x, Rx_sum, 10, preamble_len/10);
         double[] y = new double[locs.length];
         for (int i = 0; i < y.length; i++) y[i] = Rx_sum[locs[i]];
-        int[] final_locs = findallpeaks(locs, y, 3, 0);
+        int[] final_locs = findallpeaks(locs, y, 10, 0);
 
-        for (int att = 0; att < 3 && att < final_locs.length; att++) {
+        for (int att = 0; att < 10 && att < final_locs.length; att++) {
 
             int target = locs[final_locs[att]] - preamble_len;
 
