@@ -7,7 +7,7 @@ con_pre = ofdm_config(true);
 Rx_sound = Rx_sound';
 
 % ========================== 帧同步 ==========================
-Rx_data = Sync(con_pre, con, Rx_sound);
+Rx_data = Sync_xcorr(con_pre, con, Rx_sound);
 if isempty(Rx_data)
     return
 end
