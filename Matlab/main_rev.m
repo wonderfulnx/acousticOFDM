@@ -18,7 +18,6 @@ end
 str = Bin2String(Rx_bits);
 fprintf('String: %s\n', char(str));
 
-
 figure();
 plot(Tx_data);hold on;
 plot(Rx_data);
