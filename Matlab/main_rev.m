@@ -19,11 +19,14 @@ str = Bin2String(Rx_bits);
 fprintf('String: %s\n', char(str));
 
 figure();
-plot(Tx_data);hold on;
-plot(Rx_data);
+if exist('Tx_data')
+    plot(Tx_data); hold on;
+end
+plot(Rx_data); title('Tx\_data Signal and Rx\_data Signal');
 
 figure();
-plot(Rx_complex_mat,'*r');%XY坐标接收信号的星座图
+plot(Rx_complex_mat,'*r'); %XY坐标接收信号的星座图
+title('Constellation Points');
 fig_len = 4 * con.d;
 axis([-fig_len, fig_len, -fig_len, fig_len]);
 grid on

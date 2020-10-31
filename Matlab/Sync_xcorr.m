@@ -9,15 +9,23 @@ function Rx_data = Sync(con_pre, con, Rx_sound)
     Preamble = OFDM(con_pre, con.preamble);
     [xcor_val, lag] = xcorr(Rx_sound, Preamble);
     [m_val, m_ind] = max(xcor_val);
-    sam_start = lag(m_ind) + preamble_len + 1;
+    preamble_start = lag(m_ind) + 1;
+    data_start = preamble_start + preamble_len;
 
-    plot(xcor_val);
+    % output the Rx_data result
     len = length(Rx_sound);
-    if (sam_start + data_len - 1 > len)
+    if (data_start + data_len - 1 > len)
         % add zero for the rest data
         Rx_data = zeros(1, data_len);
-        Rx_data(1:len - sam_start + 1) = Rx_sound(sam_start:len);
+        Rx_data(1:len - data_start + 1) = Rx_sound(data_start:len);
     else
-        Rx_data = Rx_sound(sam_start:sam_start + data_len - 1);
+        Rx_data = Rx_sound(data_start:data_start + data_len - 1);
     end
+
+    % draw graph
+    Rx_preamble = Rx_sound(preamble_start:data_start - 1);
+    figure(); plot(xcor_val); title('XCorr result.');
+    figure(); plot(Rx_sound); hold on;
+    plot(preamble_start:preamble_start + preamble_len + data_len - 1, [Rx_preamble, Rx_data]);
+    title('Extracted Signal in Rx\_sound(including Preamble)');
 end
