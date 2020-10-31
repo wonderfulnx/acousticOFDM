@@ -18,6 +18,7 @@ end
 str = Bin2String(Rx_bits);
 fprintf('String: %s\n', char(str));
 
+
 figure();
 plot(Tx_data);hold on;
 plot(Rx_data);
@@ -30,6 +31,7 @@ grid on
 
 % % ========================== BER计算 ==========================
 bits = textread('data/data.txt');
+fprintf('Origin: %s\n', char(Bin2String(bits)));
 error_bits = 0;
 for i = 1:length(bits)
     if bits(i) ~= Rx_bits(i)

@@ -14,5 +14,7 @@ Tx_data = OFDM(con, bits);
 % =========== 生成Preamble ==========
 con_pre = ofdm_config(true);
 Preamble = OFDM(con_pre, con.preamble);
+message_data = [zeros(1, 10000), Preamble, Tx_data, zeros(1, 10000)];
+message_data = message_data / max(abs(message_data));
 
-audiowrite('data/message.wav', [Preamble, zeros(1, length(Preamble)), Tx_data], con.Fs);
+audiowrite('data/message.wav', message_data, con.Fs);

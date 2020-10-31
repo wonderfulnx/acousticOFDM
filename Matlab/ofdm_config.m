@@ -7,18 +7,18 @@ function [config] = ofdm_config(preamble)
     end
     if (preamble)
         % 子载波数
-        config.carrier_count = 4;
+        config.carrier_count = 1;
         % 每个子载波符号数
-        config.symbol_per_carrier = 2;
+        config.symbol_per_carrier = 8;
         % 每个符号比特数
         config.bits_per_symbol = 2;
         % FFT点数
         config.IFFT_length = 256;
     else
         % 子载波数
-        config.carrier_count = 16;
+        config.carrier_count = 1;
         % 每个子载波符号数
-        config.symbol_per_carrier = 16;
+        config.symbol_per_carrier = 64;
         % 每个符号比特数
         config.bits_per_symbol = 2;
         % FFT点数
@@ -31,7 +31,7 @@ function [config] = ofdm_config(preamble)
     % 窗函数滚降系数
     config.beta = 1 / 32;
     % 声音信号频率
-    config.Fc = 17000;
+    config.Fc = 150;
     % 声音信号采样率
     config.Fs = 10000;
     % 每一个OFDM符号添加的循环前缀长度为1/4*IFFT_length
@@ -39,7 +39,7 @@ function [config] = ofdm_config(preamble)
     % 循环后缀的长度
     config.GIP = config.beta * (config.IFFT_length + config.GI);
     % 载波频率（通过频谱的位置确定
-    config.carriers = (1:config.carrier_count) + (floor(config.IFFT_length / 5) - floor(config.carrier_count / 2));
+    config.carriers = (1:config.carrier_count) + (floor(config.IFFT_length * 3 / 200) - floor(config.carrier_count / 2));
     config.conjugate_carriers = config.IFFT_length - config.carriers + 2;
     % 基带信息长度
     config.baseband_length = config.carrier_count * config.symbol_per_carrier * config.bits_per_symbol;
