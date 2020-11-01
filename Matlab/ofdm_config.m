@@ -7,18 +7,18 @@ function [config] = ofdm_config(preamble)
     end
     if (preamble)
         % 子载波数
-        config.carrier_count = 1;
+        config.carrier_count = 4;
         % 每个子载波符号数
-        config.symbol_per_carrier = 8;
+        config.symbol_per_carrier = 2;
         % 每个符号比特数
         config.bits_per_symbol = 2;
         % FFT点数
         config.IFFT_length = 256;
     else
         % 子载波数
-        config.carrier_count = 1;
+        config.carrier_count = 16;
         % 每个子载波符号数
-        config.symbol_per_carrier = 64;
+        config.symbol_per_carrier = 16;
         % 每个符号比特数
         config.bits_per_symbol = 2;
         % FFT点数
