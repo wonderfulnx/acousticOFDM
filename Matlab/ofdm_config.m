@@ -39,7 +39,7 @@ function [config] = ofdm_config(preamble)
     % 循环后缀的长度
     config.GIP = config.beta * (config.IFFT_length + config.GI);
     % 载波频率（通过频谱的位置确定
-    config.carriers = (1:config.carrier_count) + (floor(config.IFFT_length * / 5) - floor(config.carrier_count / 2));
+    config.carriers = (1:config.carrier_count) + (floor(config.IFFT_length / 5) - floor(config.carrier_count / 2));
     config.conjugate_carriers = config.IFFT_length - config.carriers + 2;
     % 基带信息长度
     config.baseband_length = config.carrier_count * config.symbol_per_carrier * config.bits_per_symbol;
