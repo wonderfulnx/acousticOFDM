@@ -1,5 +1,10 @@
 function Rx_data = Sync(con_pre, con, Rx_sound)
 %
+% =================================================================
+% !!!NOTE!!!      This sync function has been deprecated!
+% =================================================================
+%
+%
 % Syntax: desire_data = Sync(Rx_signal, config)
 %
     preamble_len = con_pre.symbol_per_carrier * (con_pre.IFFT_length + con_pre.GI) + con_pre.GIP;
