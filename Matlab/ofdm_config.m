@@ -31,7 +31,7 @@ function [config] = ofdm_config(preamble)
     % 窗函数滚降系数
     config.beta = 1 / 32;
     % 声音信号频率
-    config.Fc = 150;
+    config.Fc = 17000;
     % 声音信号采样率
     config.Fs = 10000;
     % 每一个OFDM符号添加的循环前缀长度为1/4*IFFT_length
@@ -39,7 +39,7 @@ function [config] = ofdm_config(preamble)
     % 循环后缀的长度
     config.GIP = config.beta * (config.IFFT_length + config.GI);
     % 载波频率（通过频谱的位置确定
-    config.carriers = (1:config.carrier_count) + (floor(config.IFFT_length * 3 / 200) - floor(config.carrier_count / 2));
+    config.carriers = (1:config.carrier_count) + (floor(config.IFFT_length * / 5) - floor(config.carrier_count / 2));
     config.conjugate_carriers = config.IFFT_length - config.carriers + 2;
     % 基带信息长度
     config.baseband_length = config.carrier_count * config.symbol_per_carrier * config.bits_per_symbol;
