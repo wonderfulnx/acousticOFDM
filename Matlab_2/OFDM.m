@@ -16,7 +16,7 @@ function Tx_data = OFDM(config, bits)
 % ======================== IFFT ============================
     IFFT_mod = zeros(config.symbol_per_carrier, config.IFFT_length);
     IFFT_mod(:, config.carriers) = complex_mat;
-    IFFT_mod(:, config.conjugate_carriers) = conj(complex_mat);
+    % IFFT_mod(:, config.conjugate_carriers) = conj(complex_mat);
 
     IFFT_res = ifft(IFFT_mod, config.IFFT_length, 2);
 
@@ -36,10 +36,12 @@ function Tx_data = OFDM(config, bits)
 
 % ======================== 信号加窗 ==============================
     windowed_time_mat_cp = zeros(config.symbol_per_carrier, config.IFFT_length + config.GI + config.GIP);
-    for i = 1:config.symbol_per_carrier %12
+    for i = 1:config.symbol_per_carrier
         %加窗 升余弦窗
-        windowed_time_mat_cp(i,:) = real(time_mat_cp(i,:)).*rcoswindow(...
-            config.beta, config.IFFT_length + config.GI)';
+        windowed_time_mat_cp(i,:) = time_mat_cp(i,:).*rcoswindow(...
+            config.beta, config.IFFT_length + config.GI + config.GIP)';
+        % Or
+        % windowed_time_mat_cp(i,:) = time_mat_cp(i,:).*hann(config.IFFT_length + config.GI + config.GIP)';
     end
 
 % ======================== 并转串 ==============================

@@ -5,7 +5,7 @@ con = ofdm_config();
 
 % =========== 生成要传输的数据 ==========
 rand('twister',0);
-bits = round(rand(1, con.baseband_length));
+bits = round(rand(1, con.load_bits));
 bit_file = fopen('data/data.txt', 'w');
 fprintf(bit_file, "%d\n", bits);
 fclose(bit_file);
