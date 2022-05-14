@@ -75,6 +75,8 @@ We show the result of one reception here:
 
 ### Reference
 
-[1] Molisch, Andreas F. *Wireless communications*. John Wiley & Sons, 2012.
+[1] Molisch, Andreas F. Wireless communications. *John Wiley & Sons*, 2012.
 
-[2] "IEEE Standard for Information Technology - Telecommunications and Information Exchange Between Systems - Local and Metropolitan Area Networks - Specific Requirements - Part 11: Wireless LAN Medium Access Control (MAC) and Physical Layer (PHY) Specifications," in *IEEE Std 802.11-2007 (Revision of IEEE Std 802.11-1999)*.
+[2] Tse, David, and Pramod Viswanath. Fundamentals of wireless communication. *Cambridge university press*, 2005.
+
+[3] "IEEE Standard for Information Technology - Telecommunications and Information Exchange Between Systems - Local and Metropolitan Area Networks - Specific Requirements - Part 11: Wireless LAN Medium Access Control (MAC) and Physical Layer (PHY) Specifications", in *IEEE Std 802.11-2007 (Revision of IEEE Std 802.11-1999)*, 2007.
